@@ -7,7 +7,6 @@
                 <div class="doubleThumb_thumb"></div>
                 <div class="floatWindow">{{ describe(index1) }}</div>
             </div>
-
             <div class="doubleThumb_wrapper">
                 <div class="doubleThumb_thumb"></div>
                 <div class="floatWindow">{{ describe(index2) }}</div>
@@ -120,7 +119,6 @@ onMounted(() => {
     }
     thumb[0].addEventListener('mousedown', (e) => {
         e.stopPropagation()
-        console.log('mousedown thumb1')
         floatWindow.forEach(e => e.classList.add('active'))
         document.addEventListener('mousemove', moveThumb1)
         document.addEventListener('mouseup', () => {
@@ -129,7 +127,6 @@ onMounted(() => {
         })
     })
     thumb[1].addEventListener('mousedown', (e) => {
-        console.log('mousedown thumb2')
         e.stopPropagation()
         floatWindow.forEach(e => e.classList.add('active'))
         document.addEventListener('mousemove', moveThumb2)
@@ -140,10 +137,8 @@ onMounted(() => {
     })
 
     container.addEventListener('mousedown', (e) => {
-        console.log('mousedown container')
         floatWindow.forEach(e => e.classList.add('active'))
-
-        if (Math.abs(parseInt(doubleThumb_wrapper[0].style.left) - e.pageX) < Math.abs(parseInt(doubleThumb_wrapper[1].style.left) - e.pageX)) {
+        if (Math.abs(parseInt(doubleThumb_wrapper[0].getBoundingClientRect().left + thumb[0].style.width/2) - e.pageX) < Math.abs(parseInt(doubleThumb_wrapper[1].getBoundingClientRect().left+ thumb[0].style.width/2) - e.pageX)) {
             const index = getIndex(e.pageX)
             const left = getLeft(index)
             doubleThumb_wrapper[0].style.left = `${left}px`
