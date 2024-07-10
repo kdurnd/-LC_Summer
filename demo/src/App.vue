@@ -66,11 +66,11 @@ onMounted(() => {
   doms.switchItem = document.querySelectorAll('.switchItem')
   doms.switchItemLine = document.querySelector('.switchItemLine')
 
-  doms.switchItem[0].addEventListener('mousedown',async (e) => {
+  const handleMouseDown = (e, dom, color) => {
     let couldDestroy = false;
     console.log(couldDestroy)
-    const left = e.clientX - doms.switchItem[0].getBoundingClientRect().left;
-    const top = e.clientY - doms.switchItem[0].getBoundingClientRect().top;
+    const left = e.clientX - dom.getBoundingClientRect().left;
+    const top = e.clientY - dom.getBoundingClientRect().top;
     const deeperBack = document.createElement('div');
     deeperBack.style.position = 'absolute';
     deeperBack.style.width = '100px';
@@ -80,128 +80,91 @@ onMounted(() => {
     deeperBack.style.transition = '0.5s';
     deeperBack.style.left = left + 'px';
     deeperBack.style.top = top + 'px';
-    deeperBack.style.backgroundColor = deeperBackColor[0];
-    doms.switchItem[0].appendChild(deeperBack);
+    deeperBack.style.backgroundColor = color;
+    console.log(color)
+    dom.appendChild(deeperBack);
     //强行渲染
     deeperBack.getBoundingClientRect();
     deeperBack.style.transform = `translate(-50%,-50%) scale(2.8)`;
-    
-    const removeMouseUpAndMouseLeaveListeners = () => {  
-        doms.switchItem[0].removeEventListener('mouseup', handleMouseUp);  
-        doms.switchItem[0].removeEventListener('mouseleave', handleMouseLeave);  
-        console.log('removeEventListener');  
-    };  
-    const handleMouseUp = () => {  
-        if (couldDestroy) {  
-            console.log('destroy in mouseup');  
-            doms.switchItem[0].removeChild(deeperBack);  
-            removeMouseUpAndMouseLeaveListeners();  
-        } else {  
-            couldDestroy = true;  
-        }  
-    };  
 
-    const handleMouseLeave = () => {  
-        if (couldDestroy) {  
-            console.log('destroy in mouseleave');  
-            doms.switchItem[0].removeChild(deeperBack);  
-            removeMouseUpAndMouseLeaveListeners();  
-        } else {  
-            couldDestroy = true;  
-        }  
-    };  
-    
+    const removeMouseUpAndMouseLeaveListeners = () => {
+      dom.removeEventListener('mouseup', handleMouseUp);
+      dom.removeEventListener('mouseleave', handleMouseLeave);
+      console.log('removeEventListener');
+    };
+    const handleMouseUp = () => {
+      if (couldDestroy) {
+        console.log('destroy in mouseup');
+        dom.removeChild(deeperBack);
+        removeMouseUpAndMouseLeaveListeners();
+      } else {
+        couldDestroy = true;
+      }
+    };
+
+    const handleMouseLeave = () => {
+      if (couldDestroy) {
+        console.log('destroy in mouseleave');
+        dom.removeChild(deeperBack);
+        removeMouseUpAndMouseLeaveListeners();
+      } else {
+        couldDestroy = true;
+      }
+    };
+
     deeperBack.addEventListener('transitionend', () => {
       console.log('transitionend')
       if (couldDestroy) {
         console.log('destroy in transitionend')
-        doms.switchItem[0].removeChild(deeperBack);
-        removeMouseUpAndMouseLeaveListeners();  
+        dom.removeChild(deeperBack);
+        removeMouseUpAndMouseLeaveListeners();
       } else {
         couldDestroy = true;
       }
     })
-    doms.switchItem[0].addEventListener('mouseup', handleMouseUp);  
-    doms.switchItem[0].addEventListener('mouseleave', handleMouseLeave);  
-  })
-
-  doms.switchItem[1].addEventListener('mousedown',async (e) => {
-    let couldDestroy = false;
-    console.log(couldDestroy)
-    const left = e.clientX - doms.switchItem[1].getBoundingClientRect().left;
-    const top = e.clientY - doms.switchItem[1].getBoundingClientRect().top;
-    const deeperBack = document.createElement('div');
-    deeperBack.style.position = 'absolute';
-    deeperBack.style.width = '100px';
-    deeperBack.style.height = '100px';
-    deeperBack.style.borderRadius = '50%';
-    deeperBack.style.transform = `translate(-50%,-50%) scale(0)`;
-    deeperBack.style.transition = '0.5s';
-    deeperBack.style.left = left + 'px';
-    deeperBack.style.top = top + 'px';
-    deeperBack.style.backgroundColor = deeperBackColor[1];
-    doms.switchItem[1].appendChild(deeperBack);
-    //强行渲染
-    deeperBack.getBoundingClientRect();
-    deeperBack.style.transform = `translate(-50%,-50%) scale(2.8)`;
-    
-    const removeMouseUpAndMouseLeaveListeners = () => {  
-        doms.switchItem[1].removeEventListener('mouseup', handleMouseUp);  
-        doms.switchItem[1].removeEventListener('mouseleave', handleMouseLeave);  
-        console.log('removeEventListener');  
-    };  
-    const handleMouseUp = () => {  
-        if (couldDestroy) {  
-            console.log('destroy in mouseup');  
-            doms.switchItem[1].removeChild(deeperBack);  
-            removeMouseUpAndMouseLeaveListeners();  
-        } else {  
-            couldDestroy = true;  
-        }  
-    };  
-
-    const handleMouseLeave = () => {  
-        if (couldDestroy) {  
-            console.log('destroy in mouseleave');  
-            doms.switchItem[1].removeChild(deeperBack);  
-            removeMouseUpAndMouseLeaveListeners();  
-        } else {  
-            couldDestroy = true;  
-        }  
-    };  
-    
-    deeperBack.addEventListener('transitionend', () => {
-      console.log('transitionend')
-      if (couldDestroy) {
-        console.log('destroy in transitionend')
-        doms.switchItem[1].removeChild(deeperBack);
-        removeMouseUpAndMouseLeaveListeners();  
-      } else {
-        couldDestroy = true;
-      }
-    })
-    doms.switchItem[1].addEventListener('mouseup', handleMouseUp);  
-    doms.switchItem[1].addEventListener('mouseleave', handleMouseLeave);  
-  })
+    dom.addEventListener('mouseup', handleMouseUp);
+    dom.addEventListener('mouseleave', handleMouseLeave);
+  }
+  const MouseDownHandler = (e) => {
+     handleMouseDown
+  }
+  const setSwitchItemEventListener = (dom, color, controller) => {
+    dom.addEventListener('mousedown', (e) => {
+      handleMouseDown(e, dom, color)
+    },{signal: controller.signal})
+  }
  
+  let controller = new AbortController()
+  watchEffect(() => {
+    console.log('watchEffect')
+    controller.abort()
+    controller = new AbortController()
+    setSwitchItemEventListener(doms.switchItem[0], deeperBackColor.value[0], controller)
+    setSwitchItemEventListener(doms.switchItem[1], deeperBackColor.value[1], controller)
+  })
+
+
+
   toOld()
-  
+
 })
-let deeperBackColor = ["", ""]
+const deeperBackColor = ref(['rgba(25, 118, 210,0.3)', 'rgba(0,0,0,0.3)'])
+ 
 const toOld = () => {
+  if (doms.switchItem[0].classList.contains('active')) return
   doms.switchItem[0].classList.add('active')
   doms.switchItem[1].classList.remove('active')
   doms.switchItemLine.classList.remove('right')
-  deeperBackColor[0] = 'rgba(25, 118, 210,0.3)'
-  deeperBackColor[1] = 'rgba(0,0,0,0.3)'
+  deeperBackColor.value[0] = 'rgba(25, 118, 210,0.3)'
+  deeperBackColor.value[1] = 'rgba(0,0,0,0.3)'
 }
 const toNew = () => {
+  if (doms.switchItem[1].classList.contains('active')) return
   doms.switchItem[1].classList.add('active')
   doms.switchItem[0].classList.remove('active')
   doms.switchItemLine.classList.add('right')
-  deeperBackColor[1] = 'rgba(25, 118, 210,0.3)'
-  deeperBackColor[0] = 'rgba(0,0,0,0.3)'
-
+  deeperBackColor.value[0] = 'rgba(0,0,0,0.3)'
+  deeperBackColor.value[1] = 'rgba(25, 118, 210,0.3)'
 }
 
 
@@ -385,9 +348,11 @@ const toNew = () => {
   border-radius: 50%;
   /* transform: translate(-50%, -50%) scale(0); */
 }
+
 .deeperBackAnimation {
   animation: deeper 0.5s forwards;
 }
+
 @keyframes deeper {
   from {
     transform: translate(-50%, -50%) scale(0);
