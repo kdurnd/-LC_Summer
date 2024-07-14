@@ -7,7 +7,7 @@
         <span>使用高级设置</span>
       </label>
       <div class="relative search">
-        <input type="text" class="searchMusic" v-model="searchMusic">
+        <input type="text" class="searchMusic" v-model="searchMusic" @input="searchMusicByName">
         <span class="searchMusic-placeholder">查找乐曲</span>
         <div class="searchMusic-bottom"></div>
       </div>
@@ -27,18 +27,23 @@
       </label>
     </div>
     <div class="switchVersion">
-      <div class="switchItem active" @click="toOld">
+      <div class="switchItem active">
         旧乐谱
       </div>
-      <div class="switchItem" @click="toNew">
+      <div class="switchItem">
         DX 2024
       </div>
       <div class="switchItemLine"></div>
     </div>
-    <div class="tableContainer">
-      <div class="oldTable">
+    <div class="table">
+      <div class="tableContainer">
+        <div class="tableItem" v-show="showOld">
+          <musicTable :musicTableData="musicTableData"></musicTable>
+        </div>
+        <div class="tableItem" v-show="showNew">
+          <musicTable :musicTableData="musicTableData"></musicTable>
+        </div>
       </div>
-      <div class="newTable"></div>
     </div>
   </div>
 </template>
@@ -46,12 +51,22 @@
 <script setup>
 import checkbox from './components/checkbox.vue'
 import doubleThumb from './components/doubleThumb.vue'
+import musicTable from './components/musicTable.vue'
+import data from '../testData.json'
 import { ref, watchEffect, computed, onMounted, nextTick } from 'vue'
 const searchMusic = ref('')
+const searchMusicByName = () => {
+  musicTableData.value = musicList.filter((item) => {
+    if (item.name.includes(searchMusic.value)) {
+      return true
+    }
+    return false
+  })
+}
 const highLevelSet = ref(false)
 const chooseMode = ref(false)
 const mode = computed(() => {
-  return chooseMode.value ? '等级' : '定数'
+  return !chooseMode.value ? '等级' : '定数'
 })
 const describeByLevel = (e) => {
   const arr = ['1', '2', '3', '4', '5', '6', '7', '7+', '8', '8+', '9', '9+', '10', '10+', '11', '11+', '12', '12+', '13', '13+', '14', '14+', '15']
@@ -59,16 +74,22 @@ const describeByLevel = (e) => {
 }
 const filterByLevel = (index1, index2) => {
   // console.log(index1, index2)
+  musicTableData.value = musicList.filter((item) => {
+    if (index1 <= item.numLevel && item.numLevel <= index2) {
+      return true
+    }
+    return false
+  })
 }
 const doms = {}
 
 onMounted(() => {
   doms.switchItem = document.querySelectorAll('.switchItem')
   doms.switchItemLine = document.querySelector('.switchItemLine')
-
-  const handleMouseDown = (e, dom, color) => {
+  doms.tableContainer = document.querySelector('.tableContainer')
+  const handleMouseDown = (e, dom, color, callback) => {
     let couldDestroy = false;
-    console.log(couldDestroy)
+    // console.log(couldDestroy)
     const left = e.clientX - dom.getBoundingClientRect().left;
     const top = e.clientY - dom.getBoundingClientRect().top;
     const deeperBack = document.createElement('div');
@@ -77,11 +98,11 @@ onMounted(() => {
     deeperBack.style.height = '100px';
     deeperBack.style.borderRadius = '50%';
     deeperBack.style.transform = `translate(-50%,-50%) scale(0)`;
-    deeperBack.style.transition = '0.5s';
+    deeperBack.style.transition = '0.3s';
     deeperBack.style.left = left + 'px';
     deeperBack.style.top = top + 'px';
     deeperBack.style.backgroundColor = color;
-    console.log(color)
+    // console.log(color)
     dom.appendChild(deeperBack);
     //强行渲染
     deeperBack.getBoundingClientRect();
@@ -90,21 +111,22 @@ onMounted(() => {
     const removeMouseUpAndMouseLeaveListeners = () => {
       dom.removeEventListener('mouseup', handleMouseUp);
       dom.removeEventListener('mouseleave', handleMouseLeave);
-      console.log('removeEventListener');
+      // console.log('removeEventListener');
     };
     const handleMouseUp = () => {
       if (couldDestroy) {
-        console.log('destroy in mouseup');
+        // console.log('destroy in mouseup');
         dom.removeChild(deeperBack);
         removeMouseUpAndMouseLeaveListeners();
       } else {
         couldDestroy = true;
       }
+      callback()
     };
 
     const handleMouseLeave = () => {
       if (couldDestroy) {
-        console.log('destroy in mouseleave');
+        // console.log('destroy in mouseleave');
         dom.removeChild(deeperBack);
         removeMouseUpAndMouseLeaveListeners();
       } else {
@@ -113,9 +135,9 @@ onMounted(() => {
     };
 
     deeperBack.addEventListener('transitionend', () => {
-      console.log('transitionend')
+      // console.log('transitionend')
       if (couldDestroy) {
-        console.log('destroy in transitionend')
+        // console.log('destroy in transitionend')
         dom.removeChild(deeperBack);
         removeMouseUpAndMouseLeaveListeners();
       } else {
@@ -125,49 +147,144 @@ onMounted(() => {
     dom.addEventListener('mouseup', handleMouseUp);
     dom.addEventListener('mouseleave', handleMouseLeave);
   }
-  const MouseDownHandler = (e) => {
-     handleMouseDown
-  }
-  const setSwitchItemEventListener = (dom, color, controller) => {
+  const setSwitchItemEventListener = (dom, color, controller, callback) => {
     dom.addEventListener('mousedown', (e) => {
-      handleMouseDown(e, dom, color)
-    },{signal: controller.signal})
+      handleMouseDown(e, dom, color, callback)
+    }, { signal: controller.signal })
   }
- 
   let controller = new AbortController()
   watchEffect(() => {
-    console.log('watchEffect')
     controller.abort()
     controller = new AbortController()
-    setSwitchItemEventListener(doms.switchItem[0], deeperBackColor.value[0], controller)
-    setSwitchItemEventListener(doms.switchItem[1], deeperBackColor.value[1], controller)
+    setSwitchItemEventListener(doms.switchItem[0], deeperBackColor.value[0], controller, toOld)
+    setSwitchItemEventListener(doms.switchItem[1], deeperBackColor.value[1], controller, toNew)
   })
-
-
-
   toOld()
 
 })
 const deeperBackColor = ref(['rgba(25, 118, 210,0.3)', 'rgba(0,0,0,0.3)'])
- 
+const showOld = ref(true)
+const showNew = ref(false)
 const toOld = () => {
+  //switch按钮
   if (doms.switchItem[0].classList.contains('active')) return
   doms.switchItem[0].classList.add('active')
   doms.switchItem[1].classList.remove('active')
   doms.switchItemLine.classList.remove('right')
   deeperBackColor.value[0] = 'rgba(25, 118, 210,0.3)'
   deeperBackColor.value[1] = 'rgba(0,0,0,0.3)'
+  const deeperBack = doms.switchItem[0].children[0]
+  if (deeperBack) deeperBack.style.backgroundColor = 'rgba(25, 118, 210,0.3)'
+  // console.log(deeperBack)
+  // table部分
+  showOld.value = true
+  doms.tableContainer.classList.remove('right')
+  doms.tableContainer.classList.add('left')
+  doms.tableContainer.addEventListener('animationend', () => {
+    showOld.value = true
+    console.log('animationend left')
+    showNew.value = false
+    doms.tableContainer.classList.remove('left')
+  }, { once: true })
+
 }
 const toNew = () => {
+  //switch按钮
   if (doms.switchItem[1].classList.contains('active')) return
   doms.switchItem[1].classList.add('active')
   doms.switchItem[0].classList.remove('active')
   doms.switchItemLine.classList.add('right')
   deeperBackColor.value[0] = 'rgba(0,0,0,0.3)'
   deeperBackColor.value[1] = 'rgba(25, 118, 210,0.3)'
+  const deeperBack = doms.switchItem[1].children[0]
+  if (deeperBack) deeperBack.style.backgroundColor = 'rgba(25, 118, 210,0.3)'
+  // table部分
+  showNew.value = true
+  doms.tableContainer.classList.remove('left')
+  doms.tableContainer.classList.add('right')
+  doms.tableContainer.addEventListener('animationend', () => {
+    showNew.value = true
+    console.log('animationend right')
+    showOld.value = false
+    doms.tableContainer.classList.remove('right')
+  }, { once: true })
 }
 
+data.sort((a, b) => {
+  return b["DX-Rating"] - a["DX-Rating"]
+})
 
+class Music {
+  constructor(name, category, difficulty, level, concreteLevel, achievement, dxRating, rank) {
+    this.name = name
+    this.category = category
+    this.difficulty = difficulty
+    this.level = level
+    this.concreteLevel = +concreteLevel
+    this.achievement = +achievement
+    this.dxRating = +dxRating
+    this.rank = rank
+  }
+  get numLevel() {
+    const map = {
+      '1': 0,
+      '2': 1,
+      '3': 2,
+      '4': 3,
+      '5': 4,
+      '6': 5,
+      '7': 6,
+      '7+': 7,
+      '8': 8,
+      '8+': 9,
+      '9': 10,
+      '9+': 11,
+      '10': 12,
+      '10+': 13,
+      '11': 14,
+      '11+': 15,
+      '12': 16,
+      '12+': 17,
+      '13': 18,
+      '13+': 19,
+      '14': 20,
+      '14+': 21,
+      '15': 22
+    }
+    return map[this.level]
+  }
+  getAchievementLevel() {
+    if (this.achievement >= 100.5 && this.achievement <= 101) {
+      return "SSS+"
+    }
+    if (this.achievement >= 100 && this.achievement < 100.5) {
+      return "SSS"
+    }
+    if (this.achievement >= 99.5 && this.achievement < 100) {
+      return "SS+"
+    }
+    if (this.achievement >= 99 && this.achievement < 99.5) {
+      return "SS"
+    }
+    if (this.achievement >= 98 && this.achievement < 99) {
+      return "S+"
+    }
+    if (this.achievement >= 97 && this.achievement < 98) {
+      return "S"
+    }
+    if (this.achievement < 97) {
+      return "A"
+    }
+  }
+}
+const musicList = []
+const musicTableData = ref([])
+for (let i = 0; i < data.length; i++) {
+  const item = data[i]
+  const music = new Music(item["name"], item["category"], item["difficulty"], item["level"], item["concrete-level"], item["achievement"], item["DX-Rating"], i + 1)
+  musicList.push(music)
+  musicTableData.value.push(music)
+}
 </script>
 
 <style scoped>
@@ -182,7 +299,7 @@ const toNew = () => {
 }
 
 .container {
-  width: 90%;
+  width: 95%;
   margin: 0 auto;
   padding: 0 20px;
   color: rgba(0, 0, 0, 0.87);
@@ -331,35 +448,53 @@ const toNew = () => {
   background-color: #1976D2;
   bottom: 0;
   left: 0;
-  transition: 0.5s;
+  transition: 0.3s;
 }
 
 .switchItemLine.right {
   transform: translateX(100%);
 }
 
-.deeperBack {
-  position: absolute;
-  width: 100px;
-  height: 100px;
-  top: 0;
-  left: 0;
-  z-index: -1;
-  border-radius: 50%;
-  /* transform: translate(-50%, -50%) scale(0); */
+.table {
+  overflow: hidden;
+  margin-top: 10px;
 }
 
-.deeperBackAnimation {
-  animation: deeper 0.5s forwards;
+.tableContainer {
+  display: flex;
+  width: 200%;
 }
 
-@keyframes deeper {
-  from {
-    transform: translate(-50%, -50%) scale(0);
+.tableContainer.right {
+  animation: right 0.3s;
+}
+
+.tableContainer.left {
+  animation: left 0.3s;
+}
+
+@keyframes right {
+  0% {
+    transform: translateX(0);
   }
 
-  to {
-    transform: translate(-50%, -50%) scale(2.8);
+  100% {
+    transform: translateX(-50%);
   }
+}
+
+@keyframes left {
+  0% {
+    transform: translateX(-50%);
+  }
+
+  100% {
+    transform: translateX(0);
+  }
+}
+
+
+.tableItem {
+  width: 50%;
 }
 </style>

@@ -1,0 +1,152 @@
+[
+    {
+        "name": "裏表ラバーズ",
+        "category": "SD",
+        "difficulty": "Advanced",
+        "level": "8",
+        "concrete-level": "8.2",
+        "achievement": "98.6347",
+        "DX-Score": "678",
+        "DX-Rating": "164"
+    },
+    {
+        "name": "初音ミクの消失",
+        "category": "SD",
+        "difficulty": "Advanced",
+        "level": "8+",
+        "concrete-level": "8.8",
+        "achievement": "99.2495",
+        "DX-Score": "1063",
+        "DX-Rating": "181"
+    },
+    {
+        "name": "Grievous Lady",
+        "category": "DX",
+        "difficulty": "Advanced",
+        "level": "8",
+        "concrete-level": "8",
+        "achievement": "97.4542",
+        "DX-Score": "1061",
+        "DX-Rating": "155"
+    },
+    {
+        "name": "ヒミツCULT",
+        "category": "DX",
+        "difficulty": "Advanced",
+        "level": "8",
+        "concrete-level": "8.2",
+        "achievement": "99.7289",
+        "DX-Score": "1107",
+        "DX-Rating": "172"
+    },
+    {
+        "name": "End Time",
+        "category": "SD",
+        "difficulty": "Advanced",
+        "level": "9",
+        "concrete-level": "9.3",
+        "achievement": "99.0094",
+        "DX-Score": "833",
+        "DX-Rating": "191"
+    },
+    {
+        "name": "とびだせ！TO THE COSMIC!!",
+        "category": "DX",
+        "difficulty": "Advanced",
+        "level": "8",
+        "concrete-level": "8.2",
+        "achievement": "89.3263",
+        "DX-Score": "827",
+        "DX-Rating": "99"
+    },
+    {
+        "name": "前衛的Landscape",
+        "category": "DX",
+        "difficulty": "Advanced",
+        "level": "8",
+        "concrete-level": "8",
+        "achievement": "99.0968",
+        "DX-Score": "721",
+        "DX-Rating": "164"
+    },
+    {
+        "name": "GIGANTØMAKHIA",
+        "category": "DX",
+        "difficulty": "Advanced",
+        "level": "8",
+        "concrete-level": "8.2",
+        "achievement": "99.7813",
+        "DX-Score": "1117",
+        "DX-Rating": "172"
+    },
+    {
+        "name": "Regulus",
+        "category": "DX",
+        "difficulty": "Advanced",
+        "level": "8",
+        "concrete-level": "8.5",
+        "achievement": "95.4636",
+        "DX-Score": "974",
+        "DX-Rating": "136"
+    },
+    {
+        "name": "渦状銀河のシンフォニエッタ",
+        "category": "DX",
+        "difficulty": "Advanced",
+        "level": "8",
+        "concrete-level": "8.5",
+        "achievement": "98.0293",
+        "DX-Score": "967",
+        "DX-Rating": "169"
+    },
+    {
+        "name": "the EmpErroR",
+        "category": "SD",
+        "difficulty": "Advanced",
+        "level": "10",
+        "concrete-level": "10.5",
+        "achievement": "97.762",
+        "DX-Score": "1249",
+        "DX-Rating": "205"
+    },
+    {
+        "name": "QZKago Requiem",
+        "category": "SD",
+        "difficulty": "Advanced",
+        "level": "10+",
+        "concrete-level": "10.7",
+        "achievement": "99.1134",
+        "DX-Score": "1476",
+        "DX-Rating": "220"
+    },
+    {
+        "name": "Oshama Scramble!",
+        "category": "DX",
+        "difficulty": "Advanced",
+        "level": "8+",
+        "concrete-level": "8.7",
+        "achievement": "100.362",
+        "DX-Score": "1078",
+        "DX-Rating": "188"
+    },
+    {
+        "name": "Oshama Scramble!",
+        "category": "SD",
+        "difficulty": "Advanced",
+        "level": "8",
+        "concrete-level": "8.6",
+        "achievement": "92.7299",
+        "DX-Score": "1013",
+        "DX-Rating": "121"
+    },
+    {
+        "name": "Blows Up Everything",
+        "category": "DX",
+        "difficulty": "Advanced",
+        "level": "9",
+        "concrete-level": "9",
+        "achievement": "100.0911",
+        "DX-Score": "1163",
+        "DX-Rating": "194"
+    }
+]

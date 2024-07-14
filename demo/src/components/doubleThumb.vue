@@ -61,11 +61,23 @@ onMounted(() => {
     const doubleThumb_wrapper = document.querySelectorAll('.doubleThumb_wrapper')
     const track = document.querySelector('.doubleThumb_track')
     const thumbWidth = thumb[0].offsetWidth
-    const trackWidth = track.offsetWidth
-    const trackRect = track.getBoundingClientRect()
+    let trackWidth = track.offsetWidth
+    let trackRect = track.getBoundingClientRect()
     doubleThumb_wrapper[0].style.left = `0px`
     doubleThumb_wrapper[1].style.left = `${trackWidth}px`
-
+    window.addEventListener('resize', () => {
+        console.log('resize')
+        trackWidth = track.offsetWidth
+        trackRect = track.getBoundingClientRect()
+        updateUi()
+    })
+    const updateUi = () => {
+        const left1 = getLeft(index1.value - offset)
+        const left2 = getLeft(index2.value - offset)
+        doubleThumb_wrapper[0].style.left = `${left1}px`
+        doubleThumb_wrapper[1].style.left = `${left2}px`
+        setHighlight()
+    }
     const getIndex = (x) => {
         if (x < trackRect.left) {
             return min
